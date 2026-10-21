@@ -1,0 +1,45 @@
+{
+  "name": "chat-backend",
+  "version": "1.0.0",
+  "description": "Backend for a chat app, built with Node.js and TypeScript.",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.json && tsc-alias -p tsconfig.json",
+    "start": "node dist/server.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "db:migrate": "tsx src/scripts/migrate.ts",
+    "db:seed": "tsx src/scripts/seed.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/singhaditya4743/chat-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/singhaditya4743/chat-backend/issues"
+  },
+  "homepage": "https://github.com/singhaditya4743/chat-backend#readme",
+  "dependencies": {
+    "dotenv": "^18.0.8",
+    "express": "^5.3.0",
+    "firebase-admin": "^14.5.0",
+    "pg": "^8.23.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/express": "^5.0.6",
+    "@types/node": "^24.19.2",
+    "@types/pg": "^8.23.1",
+    "eslint": "^10.13.0",
+    "tsc-alias": "^1.9.8",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.0"
+  }
+}
