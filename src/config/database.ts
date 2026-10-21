@@ -10,7 +10,7 @@ export const pool = new Pool({
   connectionTimeoutMillis: 10_000,
 });
 
-// Neon closes idle connections; log instead of crashing the process
+// neon drops idle connections, don't crash on it
 pool.on('error', (error) => {
   logger.error('PostgreSQL pool error', error);
 });

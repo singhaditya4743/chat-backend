@@ -1,27 +1,9 @@
 import { FieldPath, FieldValue } from 'firebase-admin/firestore';
-import type { DocumentSnapshot } from 'firebase-admin/firestore';
-import { firestore } from '@/config/firebase';
-import { MessageModel, messageDocSchema } from '@/models/messageModel';
+import { MessageModel } from '@/models/messageModel';
+import { messagesOf, toMessage } from '@/repositories/messageCollection';
 import type { Message } from '@/types/messageInterface';
 
 const { fields } = MessageModel;
-
-const messagesOf = (chatId: string) =>
-  firestore.collection(MessageModel.parentCollection).doc(chatId).collection(MessageModel.collection);
-
-const toMessage = (chatId: string, snapshot: DocumentSnapshot): Message => {
-  const doc = messageDocSchema.parse(snapshot.data());
-  return {
-    messageId: snapshot.id,
-    chatId,
-    senderId: doc.senderId,
-    text: doc.text,
-    createdAt: doc.createdAt.toDate(),
-    readBy: Object.fromEntries(
-      Object.entries(doc.readBy).map(([userId, readAt]) => [userId, readAt.toDate()]),
-    ),
-  };
-};
 
 export const insertMessage = async (
   chatId: string,
@@ -33,8 +15,10 @@ export const insertMessage = async (
     [fields.text]: text,
     [fields.createdAt]: FieldValue.serverTimestamp(),
     [fields.readBy]: {},
+    [fields.editedAt]: null,
+    [fields.deletedAt]: null,
   });
-  // Read back to get the timestamp Firestore actually assigned
+  // read back to get the server timestamp
   return toMessage(chatId, await ref.get());
 };
 
@@ -46,7 +30,6 @@ export const findMessageById = async (
   return snapshot.exists ? toMessage(chatId, snapshot) : null;
 };
 
-// FieldPath keeps the userId as one key even if it contains dots or dashes
 export const setMessageReadAt = async (
   chatId: string,
   messageId: string,
@@ -57,7 +40,7 @@ export const setMessageReadAt = async (
     .update(new FieldPath(fields.readBy, userId), FieldValue.serverTimestamp());
 };
 
-// Newest first; `null` means the `before` cursor doesn't exist in this chat
+// newest first, null if the cursor is not in this chat
 export const findLatestMessages = async (
   chatId: string,
   limit: number,

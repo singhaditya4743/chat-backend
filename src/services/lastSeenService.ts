@@ -3,7 +3,6 @@ import { assertChatMember } from '@/services/chatAccessService';
 import { getMessageOrThrow } from '@/services/messageService';
 import type { LastSeen } from '@/types/lastSeenInterface';
 
-// Moves the user's "seen up to here" pointer forward; older messages leave it unchanged
 export const updateLastSeen = async (
   chatId: string,
   userId: string,

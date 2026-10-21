@@ -4,7 +4,6 @@ const write = (level: LogLevel, message: string, error?: unknown): void => {
   const line = `${new Date().toISOString()} ${level.padEnd(5)} ${message}`;
 
   if (level === 'ERROR') {
-    // Pass the error itself so the stack trace is printed
     console.error(line, ...(error === undefined ? [] : [error]));
   } else if (level === 'WARN') {
     console.warn(line);

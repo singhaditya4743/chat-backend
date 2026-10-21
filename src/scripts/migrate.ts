@@ -41,7 +41,7 @@ const migrate = async (): Promise<void> => {
     return;
   }
 
-  // Sequential on purpose: each migration may depend on the previous one
+  // one by one, later files can depend on earlier ones
   for (const file of pending) {
     await applyMigration(file);
   }

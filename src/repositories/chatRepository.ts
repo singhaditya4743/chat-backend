@@ -16,7 +16,6 @@ export const findChatById = async (chatId: string): Promise<Chat | null> => {
   return result.rows[0] ?? null;
 };
 
-// Marks recent activity, so the chat list shows active chats first
 export const touchChat = async (chatId: string): Promise<void> => {
   await pool.query(`UPDATE ${table} SET ${columns.updatedAt} = NOW() WHERE ${columns.id} = $1`, [
     chatId,
@@ -34,7 +33,7 @@ export const findChatByDirectKey = async (
   return result.rows[0] ?? null;
 };
 
-// Returns null when another request created the same chat first
+// null if a parallel request created it first
 export const insertDirectChat = async (
   db: Queryable,
   directKey: string,
@@ -52,7 +51,7 @@ export const insertDirectChat = async (
 
 const members = ChatMemberModel.columns;
 
-// "me" finds the user's chats, "cm" collects every member of each of those chats
+// me = the user's rows, cm = all members of those chats
 export const findChatsByUserId = async (userId: string): Promise<ChatWithMembers[]> => {
   const result = await pool.query<ChatWithMembers>(
     `SELECT ${selectColumns(ChatModel, 'c')},

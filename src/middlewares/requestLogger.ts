@@ -1,11 +1,11 @@
 import type { RequestHandler } from 'express';
 import { logger } from '@/utils/logger';
 
-// One line per request once the response is sent: method, URL, status, duration
 export const requestLogger: RequestHandler = (req, res, next) => {
   const startedAt = process.hrtime.bigint();
 
-  res.on('finish', () => {
+  // 'close' also fires for streams the client hangs up on, unlike 'finish'
+  res.on('close', () => {
     const ms = Number(process.hrtime.bigint() - startedAt) / 1_000_000;
     const line = `${req.method} ${req.originalUrl} ${String(res.statusCode)} - ${ms.toFixed(0)}ms`;
 

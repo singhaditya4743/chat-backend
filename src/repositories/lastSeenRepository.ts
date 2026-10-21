@@ -24,7 +24,7 @@ const toLastSeen = (chatId: string, userId: string, snapshot: DocumentSnapshot):
   };
 };
 
-// Runs in a transaction so parallel updates can never move the pointer to an older message
+// transaction so the pointer never moves back
 export const saveLastSeen = async (
   chatId: string,
   userId: string,

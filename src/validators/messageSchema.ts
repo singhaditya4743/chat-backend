@@ -1,9 +1,6 @@
 import { z } from 'zod';
-import { idSchema, textSchema } from '@/validators/commonSchema';
+import { chatIdParamsSchema, idSchema, textSchema } from '@/validators/commonSchema';
 
-const chatIdParams = z.object({ chatId: idSchema });
-
-// Firestore auto IDs are 20 characters; allow some room
 export const messageIdSchema = z
   .string({
     error: (issue) =>
@@ -13,23 +10,42 @@ export const messageIdSchema = z
   .min(1, { error: 'messageId cannot be empty' })
   .max(128, { error: 'messageId is too long' });
 
+const messageTextSchema = textSchema('text', 2000);
+const messageParams = chatIdParamsSchema.extend({ messageId: messageIdSchema });
+
 export const sendMessageSchema = z.object({
-  params: chatIdParams,
+  params: chatIdParamsSchema,
   body: z.object({
     senderId: idSchema,
-    text: textSchema('text', 2000),
+    text: messageTextSchema,
   }),
 });
 
 export const markReadSchema = z.object({
-  params: chatIdParams.extend({ messageId: messageIdSchema }),
+  params: messageParams,
+  body: z.object({ userId: idSchema }),
+});
+
+export const editMessageSchema = z.object({
+  params: messageParams,
   body: z.object({
     userId: idSchema,
+    text: messageTextSchema,
   }),
 });
 
+export const deleteMessageSchema = z.object({
+  params: messageParams,
+  body: z.object({ userId: idSchema }),
+});
+
+export const streamMessagesSchema = z.object({
+  params: chatIdParamsSchema,
+  query: z.object({ userId: idSchema }),
+});
+
 export const getMessagesSchema = z.object({
-  params: chatIdParams,
+  params: chatIdParamsSchema,
   query: z.object({
     limit: z.coerce
       .number({ error: 'limit must be a number' })

@@ -3,7 +3,7 @@ import { z } from 'zod';
 import type { LastSeenDoc } from '@/types/lastSeenInterface';
 import type { SubcollectionModel } from '@/types/modelInterface';
 
-// Firestore layout: chats/{chatId}/members/{userId}
+// chats/{chatId}/members/{userId}
 export const LastSeenModel = {
   parentCollection: 'chats',
   collection: 'members',

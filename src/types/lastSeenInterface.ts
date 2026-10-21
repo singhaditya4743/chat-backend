@@ -1,14 +1,12 @@
 import type { Timestamp } from 'firebase-admin/firestore';
 
-// Shape of chats/{chatId}/members/{userId} as stored in Firestore
 export interface LastSeenDoc {
   lastSeenMessageId: string;
-  // createdAt of that message, used to stop the pointer from moving backwards
+  // the message's createdAt, used to stop the pointer going back
   lastSeenMessageAt: Timestamp;
   updatedAt: Timestamp;
 }
 
-// Shape returned by the API
 export interface LastSeen {
   chatId: string;
   userId: string;

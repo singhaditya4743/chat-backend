@@ -26,6 +26,10 @@ npm-debug.log*
 # Test coverage
 coverage/
 
+# Local API test files (REST Client)
+http/
+*.http
+
 # Editor / OS
 .vscode/
 .idea/

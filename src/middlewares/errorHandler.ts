@@ -3,7 +3,6 @@ import { AppError } from '@/utils/appError';
 import { logger } from '@/utils/logger';
 import { sendError } from '@/utils/response';
 
-// express.json() throws this when the body isn't valid JSON
 const isJsonParseError = (error: unknown): boolean =>
   error instanceof SyntaxError && 'type' in error && error.type === 'entity.parse.failed';
 

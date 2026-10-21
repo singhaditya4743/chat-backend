@@ -14,7 +14,6 @@ export default tseslint.config(
       },
     },
     rules: {
-      // Project rules: no `any`, small files, alias imports only
       '@typescript-eslint/no-explicit-any': 'error',
       'max-lines': ['error', { max: 100 }],
       'no-restricted-imports': [
@@ -22,7 +21,7 @@ export default tseslint.config(
         { patterns: [{ group: ['../*', './*'], message: 'Use the @/ alias instead of relative imports.' }] },
       ],
       '@typescript-eslint/consistent-type-imports': 'error',
-      // Express error handlers need all 4 params even when some are unused
+      // express error handlers need all 4 args
       '@typescript-eslint/no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_', ignoreRestSiblings: true },

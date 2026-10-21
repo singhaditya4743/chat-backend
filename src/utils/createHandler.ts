@@ -3,7 +3,7 @@ import type { z } from 'zod';
 import { AppError } from '@/utils/appError';
 
 const parseRequest = <S extends z.ZodType>(schema: S, req: Request): z.infer<S> => {
-  // Express types the body as `any`; treat it as unknown until zod checks it
+  // req.body is any, keep it unknown until zod parses it
   const body: unknown = req.body;
   const result = schema.safeParse({ body, params: req.params, query: req.query });
 
@@ -18,7 +18,6 @@ const parseRequest = <S extends z.ZodType>(schema: S, req: Request): z.infer<S> 
   return result.data;
 };
 
-// Validates body, params and query with one zod schema, then passes typed input to the handler
 export const createHandler =
   <S extends z.ZodType>(
     schema: S,

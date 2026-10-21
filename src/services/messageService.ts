@@ -1,3 +1,4 @@
+import { toMessageListItem, toReadMessage, toSentMessage } from '@/mappers/messageMapper';
 import { touchChat } from '@/repositories/chatRepository';
 import {
   findLatestMessages,
@@ -6,18 +7,23 @@ import {
   setMessageReadAt,
 } from '@/repositories/messageRepository';
 import { assertChatExists, assertChatMember } from '@/services/chatAccessService';
-import type { Message, MessagePage } from '@/types/messageInterface';
+import type {
+  Message,
+  MessagePage,
+  ReadMessage,
+  SentMessage,
+} from '@/types/messageInterface';
 import { AppError } from '@/utils/appError';
 
 export const sendMessage = async (
   chatId: string,
   senderId: string,
   text: string,
-): Promise<Message> => {
+): Promise<SentMessage> => {
   await assertChatMember(chatId, senderId);
   const message = await insertMessage(chatId, senderId, text);
   await touchChat(chatId);
-  return message;
+  return toSentMessage(message);
 };
 
 export const getMessages = async (
@@ -27,7 +33,7 @@ export const getMessages = async (
 ): Promise<MessagePage> => {
   await assertChatExists(chatId);
 
-  // Fetch one extra to know whether older messages exist
+  // one extra to know if there is an older page
   const newestFirst = await findLatestMessages(chatId, limit + 1, before);
   if (!newestFirst) throw AppError.badRequest(`Message ${before ?? ''} not found in this chat`);
 
@@ -35,7 +41,8 @@ export const getMessages = async (
   const hasMore = newestFirst.length > limit;
 
   return {
-    messages: page.reverse(),
+    chatId,
+    messages: page.reverse().map(toMessageListItem),
     nextCursor: hasMore ? (page[0]?.messageId ?? null) : null,
   };
 };
@@ -46,17 +53,17 @@ export const getMessageOrThrow = async (chatId: string, messageId: string): Prom
   return message;
 };
 
-// Idempotent: the first read time is kept, and your own messages are never marked
+// keeps the first read time, skips your own messages
 export const markMessageRead = async (
   chatId: string,
   messageId: string,
   userId: string,
-): Promise<Message> => {
+): Promise<ReadMessage> => {
   await assertChatMember(chatId, userId);
   const message = await getMessageOrThrow(chatId, messageId);
 
-  if (message.senderId === userId || userId in message.readBy) return message;
+  if (message.senderId === userId || userId in message.readBy) return toReadMessage(message);
 
   await setMessageReadAt(chatId, messageId, userId);
-  return getMessageOrThrow(chatId, messageId);
+  return toReadMessage(await getMessageOrThrow(chatId, messageId));
 };

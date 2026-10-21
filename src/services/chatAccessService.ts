@@ -1,6 +1,7 @@
-import { isChatMember } from '@/repositories/chatMemberRepository';
+import { findMemberRole } from '@/repositories/chatMemberRepository';
 import { findChatById } from '@/repositories/chatRepository';
 import type { Chat } from '@/types/chatInterface';
+import type { ChatMembership } from '@/types/chatMemberInterface';
 import { AppError } from '@/utils/appError';
 
 export const assertChatExists = async (chatId: string): Promise<Chat> => {
@@ -9,11 +10,9 @@ export const assertChatExists = async (chatId: string): Promise<Chat> => {
   return chat;
 };
 
-// 404 if the chat is missing, 403 if the user isn't in it
-export const assertChatMember = async (chatId: string, userId: string): Promise<Chat> => {
+export const assertChatMember = async (chatId: string, userId: string): Promise<ChatMembership> => {
   const chat = await assertChatExists(chatId);
-  if (!(await isChatMember(chatId, userId))) {
-    throw AppError.forbidden(`User ${userId} is not a member of chat ${chatId}`);
-  }
-  return chat;
+  const role = await findMemberRole(chatId, userId);
+  if (!role) throw AppError.forbidden(`User ${userId} is not a member of chat ${chatId}`);
+  return { chat, role };
 };

@@ -3,7 +3,7 @@ import { z } from 'zod';
 import type { MessageDoc } from '@/types/messageInterface';
 import type { SubcollectionModel } from '@/types/modelInterface';
 
-// Firestore layout: chats/{chatId}/messages/{messageId}
+// chats/{chatId}/messages/{messageId}
 export const MessageModel = {
   parentCollection: 'chats',
   collection: 'messages',
@@ -12,13 +12,19 @@ export const MessageModel = {
     text: 'text',
     createdAt: 'createdAt',
     readBy: 'readBy',
+    editedAt: 'editedAt',
+    deletedAt: 'deletedAt',
   },
 } as const satisfies SubcollectionModel<MessageDoc>;
 
-// Checks documents read back from Firestore, so bad data never reaches the API untyped
+const timestamp = z.instanceof(Timestamp);
+
+// defaults cover docs saved before these fields existed
 export const messageDocSchema = z.object({
   senderId: z.string(),
   text: z.string(),
-  createdAt: z.instanceof(Timestamp),
-  readBy: z.record(z.string(), z.instanceof(Timestamp)).default({}),
+  createdAt: timestamp,
+  readBy: z.record(z.string(), timestamp).default({}),
+  editedAt: timestamp.nullable().default(null),
+  deletedAt: timestamp.nullable().default(null),
 }) satisfies z.ZodType<MessageDoc>;

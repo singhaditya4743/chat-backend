@@ -8,12 +8,12 @@ import { requestLogger } from '@/middlewares/requestLogger';
 export const createApp = (): Express => {
   const app = express();
 
-  // First, so every request is logged, including ones that fail JSON parsing
+  // before json() so bad bodies get logged too
   app.use(requestLogger);
   app.use(express.json({ limit: '100kb' }));
   app.use(router);
 
-  // Must stay last: unknown routes, then every thrown error
+  // keep these last
   app.use(notFoundHandler);
   app.use(errorHandler);
 

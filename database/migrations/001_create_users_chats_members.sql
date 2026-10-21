@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS chats (
   id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   type       VARCHAR(10) NOT NULL CHECK (type IN ('direct', 'group')),
   name       VARCHAR(100),
-  -- Sorted "userA:userB" pair, so A-B and B-A map to the same 1:1 chat
+  -- sorted "a:b" pair, so A-B and B-A get the same chat
   direct_key VARCHAR(73) UNIQUE,
   created_by UUID NOT NULL REFERENCES users (id),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -25,5 +25,4 @@ CREATE TABLE IF NOT EXISTS chat_members (
   PRIMARY KEY (chat_id, user_id)
 );
 
--- Speeds up "list chats of a user"
 CREATE INDEX IF NOT EXISTS chat_members_user_id_idx ON chat_members (user_id);

@@ -1,7 +1,7 @@
 import { pool } from '@/config/database';
 import { runScript } from '@/scripts/runScript';
 
-// Fixed IDs so API tests can reuse the same users after every reseed
+// fixed ids so they stay the same after a reseed
 const SEED_USERS = [
   { id: '11111111-1111-4111-8111-111111111111', name: 'Alice' },
   { id: '22222222-2222-4222-8222-222222222222', name: 'Bob' },

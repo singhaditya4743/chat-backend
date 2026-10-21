@@ -8,7 +8,6 @@ import {
 import { assertUsersExist, getUserById } from '@/services/userService';
 import type { ChatSummary, CreateChatResult } from '@/types/chatInterface';
 
-// Same key for A-B and B-A, so a pair can only ever have one 1:1 chat
 const buildDirectKey = (userAId: string, userBId: string): string =>
   [userAId, userBId].sort().join(':');
 
@@ -29,7 +28,7 @@ export const createOrGetDirectChat = async (
   });
   if (created) return { chat: created, created: true };
 
-  // A parallel request won the race; return the chat it created
+  // lost the race to a parallel request, return its chat
   const winner = await findChatByDirectKey(directKey);
   if (!winner) throw new Error(`Chat for ${directKey} vanished after a conflict`);
   return { chat: winner, created: false };

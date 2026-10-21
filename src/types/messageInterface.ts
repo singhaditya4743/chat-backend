@@ -1,15 +1,15 @@
 import type { Timestamp } from 'firebase-admin/firestore';
 
-// Shape of a message document as stored in Firestore
 export interface MessageDoc {
   senderId: string;
   text: string;
   createdAt: Timestamp;
-  // Read receipts: userId -> when that user read the message
+  // userId -> readAt
   readBy: Record<string, Timestamp>;
+  editedAt: Timestamp | null;
+  deletedAt: Timestamp | null;
 }
 
-// Shape returned by the API
 export interface Message {
   messageId: string;
   chatId: string;
@@ -17,11 +17,44 @@ export interface Message {
   text: string;
   createdAt: Date;
   readBy: Record<string, Date>;
+  editedAt: Date | null;
+  deletedAt: Date | null;
 }
 
+export type SentMessage = Pick<Message, 'messageId' | 'chatId' | 'senderId' | 'text' | 'createdAt'>;
+
+export type ReadMessage = Pick<
+  Message,
+  'messageId' | 'chatId' | 'senderId' | 'text' | 'createdAt' | 'readBy'
+>;
+
+export type EditedMessage = Pick<Message, 'messageId' | 'chatId' | 'senderId' | 'text' | 'editedAt'>;
+
+export type DeletedMessage = Pick<Message, 'messageId' | 'chatId' | 'deletedAt'>;
+
+export interface ActiveMessageItem {
+  messageId: string;
+  senderId: string;
+  text: string;
+  createdAt: Date;
+  readBy: Record<string, Date>;
+  isEdited: boolean;
+  isDeleted: false;
+}
+
+export interface DeletedMessageItem {
+  messageId: string;
+  senderId: string;
+  createdAt: Date;
+  isDeleted: true;
+}
+
+export type MessageListItem = ActiveMessageItem | DeletedMessageItem;
+
 export interface MessagePage {
-  // Oldest first, like a chat screen
-  messages: Message[];
-  // Pass as ?before= to load older messages; null when there are none
+  chatId: string;
+  // oldest first
+  messages: MessageListItem[];
+  // pass as ?before= for older messages
   nextCursor: string | null;
 }

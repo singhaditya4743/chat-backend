@@ -1,6 +1,5 @@
 import type { ErrorCode, ErrorDetail } from '@/types/errorInterface';
 
-// Expected errors with an HTTP status; anything else becomes a 500
 export class AppError extends Error {
   constructor(
     public readonly statusCode: number,
