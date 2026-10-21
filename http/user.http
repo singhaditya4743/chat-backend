@@ -13,6 +13,9 @@ Content-Type: application/json
 ### Get a seeded user
 GET {{baseUrl}}/user/{{aliceId}}
 
+### List Alice's chats with member IDs (create one first in chat.http)
+GET {{baseUrl}}/user/{{aliceId}}/chats
+
 ### Validation error: empty name
 POST {{baseUrl}}/user/create
 Content-Type: application/json

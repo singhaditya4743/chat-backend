@@ -1,6 +1,7 @@
 import { Pool } from 'pg';
 import type { PoolClient } from 'pg';
 import { env } from '@/config/env';
+import { logger } from '@/utils/logger';
 
 export const pool = new Pool({
   connectionString: env.databaseUrl,
@@ -11,7 +12,7 @@ export const pool = new Pool({
 
 // Neon closes idle connections; log instead of crashing the process
 pool.on('error', (error) => {
-  console.error('PostgreSQL pool error:', error.message);
+  logger.error('PostgreSQL pool error', error);
 });
 
 export const checkDatabaseConnection = async (): Promise<void> => {

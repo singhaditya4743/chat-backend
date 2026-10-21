@@ -21,3 +21,11 @@ export const findUserById = async (id: string): Promise<User | null> => {
   );
   return result.rows[0] ?? null;
 };
+
+export const findExistingUserIds = async (ids: string[]): Promise<string[]> => {
+  const result = await pool.query<{ id: string }>(
+    `SELECT ${columns.id} AS "id" FROM ${table} WHERE ${columns.id} = ANY($1::uuid[])`,
+    [ids],
+  );
+  return result.rows.map((row) => row.id);
+};

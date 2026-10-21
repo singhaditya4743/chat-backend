@@ -23,7 +23,10 @@ export default tseslint.config(
       ],
       '@typescript-eslint/consistent-type-imports': 'error',
       // Express error handlers need all 4 params even when some are unused
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', ignoreRestSiblings: true },
+      ],
     },
   },
 );

@@ -1,12 +1,13 @@
 import { createApp } from '@/app';
 import { env } from '@/config/env';
 import { connectServices, disconnectServices } from '@/config/connections';
+import { logger } from '@/utils/logger';
 
 const start = async (): Promise<void> => {
   await connectServices();
 
   const server = createApp().listen(env.port, () => {
-    console.log(`Server running on http://localhost:${String(env.port)} (${env.nodeEnv})`);
+    logger.info(`Server running on http://localhost:${String(env.port)} (${env.nodeEnv})`);
   });
 
   const shutdown = (): void => {
@@ -20,6 +21,6 @@ const start = async (): Promise<void> => {
 };
 
 start().catch((error: unknown) => {
-  console.error(error instanceof Error ? error.message : error);
+  logger.error('Server failed to start', error);
   process.exit(1);
 });
